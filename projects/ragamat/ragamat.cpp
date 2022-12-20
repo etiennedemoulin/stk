@@ -9,6 +9,7 @@
 #include "VoicDrum.h"
 #include "Messager.h"
 #include "RtAudio.h"
+#include "Flute.h"
 
 #include <signal.h>
 #include <cstring>
@@ -44,6 +45,7 @@ struct TickData {
   JCRev    reverbs[2];
   Drone    drones[3];
   Sitar    sitar;
+  Flute    flute;
   VoicDrum voicDrums;
   Tabla    tabla;
   Messager messager;
@@ -55,6 +57,7 @@ struct TickData {
   bool haveMessage;
   StkFloat droneChance, noteChance;
   StkFloat drumChance, voiceChance;
+  StkFloat fluteChance;
   int tempo;
   int chanceCounter;
   int key;
@@ -67,7 +70,7 @@ struct TickData {
   TickData()
     : t60(4.0), counter(0),
       settling( false ), haveMessage( false ), droneChance(0.01), noteChance(0.01),
-      drumChance(0.0), voiceChance(0.0), tempo(3000), chanceCounter(3000), key(0), ragaPoint(6), endPhase(0) {}
+      drumChance(0.0), voiceChance(0.0), fluteChance(0.0), tempo(3000), chanceCounter(3000), key(0), ragaPoint(6), endPhase(0) {}
 };
 
 // Raga key numbers and drone frequencies.
@@ -114,6 +117,10 @@ void processMessage( TickData* data )
       data->voiceChance = temp;
       break;
 
+    case 5:
+      data->fluteChance = temp;
+      break;
+
     case 7:
       data->tempo = (int) (11025 - value2 * 70.0 );
       break;
@@ -122,7 +129,20 @@ void processMessage( TickData* data )
       data->drumChance = temp;
       break;
 
+    case 61:
+      droneFreqs[0] = value2;
+      break;
+
+    case 62:
+      droneFreqs[1] = value2;
+      break;
+
+    case 63:
+      droneFreqs[2] = value2;
+      break;
+
     case 64:
+      // sitar key and drone freq
       if ( value2 == 0.0 ) {
         data->key = 1;
         droneFreqs[0] = 55.0;
@@ -180,9 +200,9 @@ int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
     data->counter -= counter;
     for ( i=0; i<counter; i++ ) {
       outs[0] = data->reverbs[0].tick( data->drones[0].tick() + data->drones[2].tick()
-                                       + data->sitar.tick() );
-      outs[1] = data->reverbs[1].tick( 1.5 * data->drones[1].tick() + 0.5 * data->voicDrums.tick()
-                                       + 0.5 * data->tabla.tick() );
+                                       + data->sitar.tick() + 0.5 * data->flute.tick() );
+      outs[1] = data->reverbs[1].tick( 1.5 * data->drones[1].tick() + 0.3 * data->voicDrums.tick()
+                                       + 0.5 * data->tabla.tick() + 0.3 * data->flute.tick() );
       // Mix a little left to right and back.
       *samples++ = outs[0] + 0.3 * outs[1];
       *samples++ = outs[1] + 0.3 * outs[0];
@@ -228,12 +248,32 @@ int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
             if ( data->ragaPoint < 0 ) 
               data->ragaPoint -= ( 2 * data->ragaStep );
             if ( data->ragaPoint > 11 ) data->ragaPoint = 11;
-            if ( data->ragaStep > 0 )
+            if ( data->ragaStep > 0 ) {
               data->sitar.noteOn( Midi2Pitch[ragaUp[data->key][data->ragaPoint]],
                                   0.05 + float_random(0.3) );
-            else
+            }
+            else {
               data->sitar.noteOn( Midi2Pitch[ragaDown[data->key][data->ragaPoint]],
                                   0.05 + float_random(0.3) );
+            }
+          }
+          if ( float_random(1.0) < data->fluteChance ) {
+            temp = float_random(1.0);
+            if ( temp < 0.1) data->ragaStep = 0;
+            else if (temp < 0.5) data->ragaStep = 1;
+            else data->ragaStep = -1;
+            data->ragaPoint += data->ragaStep;
+            if ( data->ragaPoint < 0 )
+              data->ragaPoint -= ( 2 * data->ragaStep );
+            if ( data->ragaPoint > 11 ) data->ragaPoint = 11;
+            if ( data->ragaStep > 0 ) {
+              data->flute.noteOn( Midi2Pitch[ragaUp[data->key][data->ragaPoint]],
+                                  0.05 + float_random(0.3) );
+            }
+            else {
+              data->flute.noteOn( Midi2Pitch[ragaDown[data->key][data->ragaPoint]],
+                                  0.05 + float_random(0.3) );
+            }
           }
           if ( float_random(1.0) < data->voiceChance ) {
             voiceNote = (int) float_random(11);
@@ -309,6 +349,12 @@ int main( int argc, char *argv[] )
   data.drones[2].noteOn( droneFreqs[2], 0.1 );
 
   data.rateScaler = 22050.0 / Stk::sampleRate();
+
+
+  data.flute.controlChange(128.0, 50.0); //breath pressure
+  data.flute.controlChange(1.0, 128.0); // vibrato gain
+  data.flute.controlChange(11.0, 10.0); // vibrato freq
+  data.flute.controlChange(4.0, 128.0); // noise gain
 
   // Install an interrupt handler function.
 	(void) signal( SIGINT, finish );

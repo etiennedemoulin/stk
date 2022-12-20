@@ -10,7 +10,8 @@ vpath %.o $(OBJECT_PATH)
 OBJECTS	=	Stk.o Noise.o ADSR.o \
 					DelayA.o Delay.o \
 					OnePole.o OneZero.o Skini.o \
-					Tabla.o Sitar.o \
+					Tabla.o Sitar.o Flute.o \
+					DelayL.o PoleZero.o SineWave.o \
 					Drone.o VoicDrum.o FileRead.o FileWvIn.o \
 					JCRev.o Messager.o
 

@@ -1,0 +1,28 @@
+.text {
+  color: white;
+}
+
+.numbox {
+/*  font-size: 15vh;*/
+  color: white;
+}
+
+.slider {
+  font-size: 4.5vh;
+  color: white;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.body {
+background-color: black;
+}
+
+input[type=range]{
+    writing-mode: bt-lr; /* IE */
+    -webkit-appearance: slider-vertical; /* WebKit */
+    width: 100vh;
+    height: 15px;
+    outline: none;
+    background:transparent;
+}

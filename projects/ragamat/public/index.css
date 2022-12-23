@@ -1,4 +1,4 @@
-.text {
+.radio {
   color: white;
 }
 
@@ -14,6 +14,11 @@
   margin-top: 10px;
 }
 
+.checkbox {
+  color: white;
+  font-size: 4.5vh;
+}
+
 .body {
 background-color: black;
 }
@@ -25,4 +30,8 @@ input[type=range]{
     height: 15px;
     outline: none;
     background:transparent;
+}
+
+fieldset{
+  color:white;
 }

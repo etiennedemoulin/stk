@@ -7,9 +7,19 @@
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
     <script type="text/javascript">
         const socket = io.connect("/");
-    </script>
+        function setDroneValue(freq1,freq2,freq3) {
+            console.log(freq1,freq2,freq3);
+            document.getElementById('dronefreq1').setAttribute('value', freq1);
+            document.getElementById('dronefreq1').onchange();
 
-    <body class="body">
+            document.getElementById('dronefreq2').setAttribute('value', freq2);
+            document.getElementById('dronefreq2').onchange();
+
+            document.getElementById('dronefreq3').setAttribute('value', freq3);
+            document.getElementById('dronefreq3').onchange();
+        }
+    </script>
+    <body class=body>
 
     <div class="slider">
         <!-- oninput to have continuous if needed -->
@@ -39,15 +49,16 @@
     <div class="slider">
         <label for="tabla">tabla</label><br>
         <input type="range" id="tabla" name="tabla" class="vranger"
-         min="0" max="127" value="10" oninput="this.nextElementSibling.value = this.value"
+         min="0" max="127" value="0" oninput="this.nextElementSibling.value = this.value"
          onchange="socket.emit('tabla', this.value)">
-         <output>10</output>
+         <output>0</output>
     </div>
 
     <div class="slider">
         <label for="flute">flute</label><br>
         <input type="range" id="flute" name="flute" class="vranger"
-         min="0" max="127" value="0" oninput="this.nextElementSibling.value = this.value"
+         min="0" max="127" value="0" disabled="true"
+         oninput="this.nextElementSibling.value = this.value"
          onchange="socket.emit('flute', this.value)">
          <output>0</output>
     </div>
@@ -60,7 +71,8 @@
          <output>3</output>
     </div>
 
-    <p class="text">Frequencies for drone</p>
+<fieldset>
+        <legend>Frequencies for drone:</legend>
     <div class="numbox">
         <label for="dronefreq1">first</label>
         <input type="number" id="dronefreq1" name="first"
@@ -78,9 +90,63 @@
     <div class="numbox">
         <label for="dronefreq3">third</label>
         <input type="number" id="dronefreq3" name="second"
-       min="20" max="20000" value="220"
+       min="20" max="20000" value="200"
        onchange="socket.emit('dronefreq3', this.value)">
     </div>
+</fieldset>
+
+<fieldset>
+        <legend>presets:</legend>
+    <div class="radio">
+        <!-- la1, mi2, la3 -->
+      <input type="radio" id="presetDrone1" name="dronePreset" value="0"
+      onchange="setDroneValue(55, 82.5, 220)" checked>
+      <label for="presetDrone1">A5</label>
+    </div>
+
+    <div class="radio">
+        <!-- mi2, si2, mi4 -->
+      <input type="radio" id="presetDrone2" name="dronePreset" value="1"
+      onchange="setDroneValue(82.5, 123.5, 330)">
+      <label for="presetDrone2">B4</label>
+    </div>
+
+    <div class="radio">
+        <!-- do2,fa#2,do4 -->
+      <input type="radio" id="presetDrone3" name="dronePreset" value="2"
+      onchange="setDroneValue(65.5,92.5,261.6)">
+      <label for="presetDrone3">C4+</label>
+    </div>
+</fieldset>
+
+<fieldset>
+        <legend>sitar scale:</legend>
+    <div class="radio">
+      <input type="radio" id="scale1" name="sitarScale" value="0"
+      onchange="socket.emit('sitarScale', this.value)" checked>
+      <label for="scale1">A5</label>
+    </div>
+
+    <div class="radio">
+        <!-- mi2, si2, mi4 -->
+      <input type="radio" id="scale2" name="sitarScale" value="1"
+      onchange="socket.emit('sitarScale', this.value)">
+      <label for="scale2">B4</label>
+    </div>
+
+    <div class="radio">
+        <!-- do2,fa#2,do4 -->
+      <input type="radio" id="scale3" name="sitarScale" value="2"
+      onchange="socket.emit('sitarScale', this.value)">
+      <label for="scale3">B4</label>
+    </div>
+</fieldset>
+
+    <marquee>
+        <img src="sun.png" width="150" height="150" >
+        <img src="2.jpg" width="150" height="150" >
+        <img src="astro.png" width="150" height="150" >
+    </marquee>
 
     </body>
 

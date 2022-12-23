@@ -118,7 +118,7 @@ void processMessage( TickData* data )
       break;
 
     case 5:
-      data->fluteChance = temp;
+      // data->fluteChance = temp;
       break;
 
     case 7:
@@ -145,15 +145,15 @@ void processMessage( TickData* data )
       // sitar key and drone freq
       if ( value2 == 0.0 ) {
         data->key = 1;
-        droneFreqs[0] = 55.0;
-        droneFreqs[1] = 82.5;
-        droneFreqs[2] = 220.0;
+        // droneFreqs[0] = 55.0;
+        // droneFreqs[1] = 82.5;
+        // droneFreqs[2] = 220.0;
       }
       else 	{
         data->key = 0;
-        droneFreqs[0] = 82.5;
-        droneFreqs[1] = 123.5;
-        droneFreqs[2] = 330.0;
+        // droneFreqs[0] = 82.5;
+        // droneFreqs[1] = 123.5;
+        // droneFreqs[2] = 330.0;
       }
       break;
 
@@ -200,9 +200,9 @@ int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
     data->counter -= counter;
     for ( i=0; i<counter; i++ ) {
       outs[0] = data->reverbs[0].tick( data->drones[0].tick() + data->drones[2].tick()
-                                       + data->sitar.tick() + 0.5 * data->flute.tick() );
+                                       + data->sitar.tick() + 0.2 * data->flute.tick() );
       outs[1] = data->reverbs[1].tick( 1.5 * data->drones[1].tick() + 0.3 * data->voicDrums.tick()
-                                       + 0.5 * data->tabla.tick() + 0.3 * data->flute.tick() );
+                                       + 0.5 * data->tabla.tick() + 0.2 * data->flute.tick() );
       // Mix a little left to right and back.
       *samples++ = outs[0] + 0.3 * outs[1];
       *samples++ = outs[1] + 0.3 * outs[0];
@@ -351,10 +351,10 @@ int main( int argc, char *argv[] )
   data.rateScaler = 22050.0 / Stk::sampleRate();
 
 
-  data.flute.controlChange(128.0, 50.0); //breath pressure
-  data.flute.controlChange(1.0, 128.0); // vibrato gain
-  data.flute.controlChange(11.0, 10.0); // vibrato freq
-  data.flute.controlChange(4.0, 128.0); // noise gain
+  // data.flute.controlChange(0.0, 128.0); //breath pressure
+  // data.flute.controlChange(1.0, 60.0); // vibrato gain
+  // data.flute.controlChange(11.0, 3.0); // vibrato freq
+  // data.flute.controlChange(4.0, 100.0); // noise gain
 
   // Install an interrupt handler function.
 	(void) signal( SIGINT, finish );

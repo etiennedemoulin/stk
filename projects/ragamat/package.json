@@ -5,12 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node src/index.js | ./ragamat -s 44100 -ip"
+    "dev": "make && node src/index.js | ./ragamat -s 44100 -ip"
   },
   "author": "Etienne Démoulin",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
-    "socket.io": "^4.5.2"
+    "socket.io": "^4.5.2",
+    "tonal": "^4.8.0"
   }
 }
